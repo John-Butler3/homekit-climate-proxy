@@ -61,8 +61,13 @@ async def test_other_commands_are_forwarded(hass: HomeAssistant, setup_entry, se
     assert len(services["turn_on"]) == 1
 
 
-async def test_fan_entity(hass: HomeAssistant, setup_entry, services) -> None:
+async def test_no_fan_entity_by_default(hass: HomeAssistant, setup_entry) -> None:
     await setup_entry()
+    assert hass.states.get(FAN) is None
+
+
+async def test_fan_entity(hass: HomeAssistant, setup_entry, services) -> None:
+    await setup_entry(create_fan=True)
     fan = hass.states.get(FAN)
     assert fan is not None
     assert fan.state == STATE_ON
@@ -120,7 +125,7 @@ async def test_switch_off_mode_option(hass: HomeAssistant, setup_entry, services
 
 
 async def test_hidden_modes_and_disabled_extras(hass: HomeAssistant, setup_entry) -> None:
-    await setup_entry(fan_mapping={"Mid": "hide"}, create_fan=False, mode_switches=False, hide_hvac_modes=["heat_cool"])
+    await setup_entry(fan_mapping={"Mid": "hide"}, mode_switches=False, hide_hvac_modes=["heat_cool"])
     assert hass.states.get(FAN) is None
     assert hass.states.get(DRY) is None
     state = hass.states.get(PROXY)

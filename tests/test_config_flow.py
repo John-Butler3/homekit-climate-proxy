@@ -18,7 +18,7 @@ from custom_components.homekit_climate_proxy.const import (
 from .conftest import SOURCE, set_source
 
 FULL_INPUT = {
-    CONF_CREATE_FAN: True,
+    CONF_CREATE_FAN: False,
     CONF_FAN_OFF_TURNS_OFF_CLIMATE: False,
     CONF_MODE_SWITCHES: True,
     CONF_SWITCH_OFF_MODE: "previous",

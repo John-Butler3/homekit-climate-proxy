@@ -12,7 +12,6 @@ built-in HomeKit Bridge cannot handle them. Written for the **Daikin Airbase**
 | Fan speed slider does nothing or shows the wrong speed | The HomeKit Bridge only recognises fan modes named `low`, `medium`/`middle`, `high` and `auto`. Daikin reports `Auto, Low, Mid, High, Low/Auto, Mid/Auto, High/Auto`, so `Mid` and the `/Auto` variants are invisible. | Exposes a copy of the climate entity whose fan modes are `auto, low, medium, high`, translating to and from the Daikin names. |
 | No way to pick Fan only or Dry | HomeKit thermostats only have Off / Heat / Cool / Auto. | Adds a **Fan only mode** switch and a **Dry mode** switch. Turning one off returns to the previous heat/cool mode (configurable). |
 | "Auto" in the Home app behaves badly | HomeKit Auto maps to Home Assistant `heat_cool`, which many Daikin units handle poorly. | Lets you hide `heat_cool` (or any mode) from HomeKit. |
-| Fan speed buried in thermostat settings | HomeKit shows the thermostat fan under the accessory settings only. | Optionally adds a separate **Fan** accessory with a speed slider and an Auto preset. |
 
 Everything else (temperature, mode, swing, presets, on/off) is forwarded to the
 original entity unchanged, and the proxy follows its state in real time.
@@ -43,7 +42,8 @@ original entity unchanged, and the proxy follows its state in real time.
 
    Targets are `auto`, `low`, `medium`, `high`, `on`, `off` or `hide`. `heat_cool`
    is pre-selected for hiding; untick it if Auto works for you. Keep the
-   Fan only / Dry switches and the separate Fan entity unless you don't want them.
+   Fan only / Dry switches on. A separate Fan accessory is available as an
+   option but off by default, the thermostat already carries the fan speed.
 4. In the HomeKit Bridge settings, **include the proxy entities and exclude the
    original Daikin climate entity**, otherwise Apple Home shows two thermostats:
 
@@ -52,7 +52,6 @@ original entity unchanged, and the proxy follows its state in real time.
      - filter:
          include_entities:
            - climate.living_room_ac
-           - fan.living_room_ac_fan
            - switch.living_room_ac_fan_only_mode
            - switch.living_room_ac_dry_mode
          exclude_entities:
@@ -67,10 +66,15 @@ All settings can be changed later via **Configure** on the integration entry.
 
 ## Notes
 
-- Fan speed from the Home app: the thermostat's fan slider maps 33 % / 66 % /
-  100 % to Low / Mid / High and the "Auto" toggle to Daikin's Auto. The separate
-  Fan accessory does the same with a plain slider.
-- Turning the Fan accessory off turns the air conditioner off (configurable).
+- Fan speed from the Home app: open the thermostat, the fan control is in its
+  detail view (speed slider 33 % / 66 % / 100 % = Low / Mid / High, plus an Auto
+  toggle for Daikin's Auto fan).
+- Dry and Fan only: Apple's thermostat has only Off / Heat / Cool / Auto, so
+  these are switches. Turning "Dry mode" on puts the unit into dry; turning it
+  off returns to the previous heat/cool mode (or off / cool, configurable).
+  Both switches must be included in the HomeKit Bridge filter to appear in the
+  Home app. Tip: add them to the same room as the thermostat and rename them
+  "Dry" and "Fan only" in the Home app for Siri.
 - Home Assistant itself is improving the HomeKit Bridge's fan-mode detection in
   newer releases; the proxy keeps working either way and still provides the
   Fan only / Dry switches and the Auto hiding.

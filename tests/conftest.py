@@ -87,7 +87,7 @@ def mock_climate_services(hass: HomeAssistant, calls: dict[str, list]) -> None:
 def make_entry(**options) -> MockConfigEntry:
     opts = {
         CONF_FAN_MAPPING: {},
-        CONF_CREATE_FAN: True,
+        CONF_CREATE_FAN: False,
         CONF_FAN_OFF_TURNS_OFF_CLIMATE: True,
         CONF_HIDE_HVAC_MODES: [],
         CONF_MODE_SWITCHES: True,

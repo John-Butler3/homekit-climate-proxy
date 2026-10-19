@@ -50,7 +50,7 @@ def _options_schema(hvac_modes: list[str]) -> vol.Schema:
             vol.Required(CONF_SWITCH_OFF_MODE, default=SWITCH_OFF_PREVIOUS): SelectSelector(
                 SelectSelectorConfig(options=SWITCH_OFF_MODES, mode=SelectSelectorMode.DROPDOWN, translation_key=CONF_SWITCH_OFF_MODE)
             ),
-            vol.Required(CONF_CREATE_FAN, default=True): BooleanSelector(),
+            vol.Required(CONF_CREATE_FAN, default=False): BooleanSelector(),
             vol.Required(CONF_FAN_OFF_TURNS_OFF_CLIMATE, default=True): BooleanSelector(),
         }
     )
@@ -152,7 +152,7 @@ class HomekitClimateProxyOptionsFlow(OptionsFlow):
             CONF_HIDE_HVAC_MODES: list(current.get(CONF_HIDE_HVAC_MODES) or []),
             CONF_MODE_SWITCHES: current.get(CONF_MODE_SWITCHES, True),
             CONF_SWITCH_OFF_MODE: current.get(CONF_SWITCH_OFF_MODE, SWITCH_OFF_PREVIOUS),
-            CONF_CREATE_FAN: current.get(CONF_CREATE_FAN, True),
+            CONF_CREATE_FAN: current.get(CONF_CREATE_FAN, False),
             CONF_FAN_OFF_TURNS_OFF_CLIMATE: current.get(CONF_FAN_OFF_TURNS_OFF_CLIMATE, True),
         }
         return self.async_show_form(

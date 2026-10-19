@@ -15,9 +15,9 @@
         "data": {
           "fan_mapping": "Fan mode mapping (one 'Source: target' per line)",
           "hide_hvac_modes": "HVAC modes to hide from HomeKit (heat_cool = HomeKit's Auto)",
-          "mode_switches": "Create switches for Fan only and Dry (HomeKit has no such thermostat modes)",
+          "mode_switches": "Create Fan only and Dry switches (HomeKit thermostats have no such modes; the switches are the only way to reach them from the Home app)",
           "switch_off_mode": "When a Fan only / Dry switch is turned off",
-          "create_fan": "Also create a separate fan entity (speed slider accessory in HomeKit)",
+          "create_fan": "Also create a separate fan accessory (off by default; the thermostat already has the fan speed)",
           "fan_off_turns_off_climate": "Turning the fan entity off turns the air conditioner off"
         }
       }
@@ -38,9 +38,9 @@
         "data": {
           "fan_mapping": "Fan mode mapping (one 'Source: target' per line)",
           "hide_hvac_modes": "HVAC modes to hide from HomeKit (heat_cool = HomeKit's Auto)",
-          "mode_switches": "Create switches for Fan only and Dry (HomeKit has no such thermostat modes)",
+          "mode_switches": "Create Fan only and Dry switches (HomeKit thermostats have no such modes; the switches are the only way to reach them from the Home app)",
           "switch_off_mode": "When a Fan only / Dry switch is turned off",
-          "create_fan": "Also create a separate fan entity (speed slider accessory in HomeKit)",
+          "create_fan": "Also create a separate fan accessory (off by default; the thermostat already has the fan speed)",
           "fan_off_turns_off_climate": "Turning the fan entity off turns the air conditioner off"
         }
       }

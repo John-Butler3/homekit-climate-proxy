@@ -69,7 +69,7 @@ def build_data(entry: ConfigEntry) -> ProxyData:
         name=cfg.get("name") or entry.title or DEFAULT_NAME,
         climate_entity_id=cfg[CONF_CLIMATE_ENTITY],
         overrides=dict(cfg.get(CONF_FAN_MAPPING) or {}),
-        create_fan=bool(cfg.get(CONF_CREATE_FAN, True)),
+        create_fan=bool(cfg.get(CONF_CREATE_FAN, False)),
         fan_off_turns_off_climate=bool(cfg.get(CONF_FAN_OFF_TURNS_OFF_CLIMATE, True)),
         hide_hvac_modes=set(cfg.get(CONF_HIDE_HVAC_MODES) or []),
         mode_switches=bool(cfg.get(CONF_MODE_SWITCHES, True)),
