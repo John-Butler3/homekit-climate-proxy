@@ -1,0 +1,14 @@
+{
+  "domain": "homekit_climate_proxy",
+  "name": "HomeKit Climate Proxy",
+  "codeowners": ["@John-Butler3"],
+  "config_flow": true,
+  "dependencies": [],
+  "after_dependencies": ["daikin", "homekit"],
+  "documentation": "https://github.com/John-Butler3/homekit-climate-proxy",
+  "integration_type": "helper",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/John-Butler3/homekit-climate-proxy/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

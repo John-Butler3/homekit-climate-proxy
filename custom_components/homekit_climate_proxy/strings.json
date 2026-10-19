@@ -1,0 +1,85 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "HomeKit Climate Proxy",
+        "description": "Pick the climate entity whose fan speed does not work in HomeKit. A HomeKit-friendly copy of it is created.",
+        "data": {
+          "climate_entity": "Climate entity",
+          "name": "Name of the proxy"
+        }
+      },
+      "mapping": {
+        "title": "Fan mode mapping",
+        "description": "The entity reports these fan modes: {modes}. Each line maps one of them to a HomeKit name: auto, low, medium, high, on, off, or hide. The suggestion usually needs no change.",
+        "data": {
+          "fan_mapping": "Fan mode mapping (one 'Source: target' per line)",
+          "hide_hvac_modes": "HVAC modes to hide from HomeKit (heat_cool = HomeKit's Auto)",
+          "mode_switches": "Create switches for Fan only and Dry (HomeKit has no such thermostat modes)",
+          "switch_off_mode": "When a Fan only / Dry switch is turned off",
+          "create_fan": "Also create a separate fan entity (speed slider accessory in HomeKit)",
+          "fan_off_turns_off_climate": "Turning the fan entity off turns the air conditioner off"
+        }
+      }
+    },
+    "error": {
+      "entity_not_found": "That entity does not exist.",
+      "invalid_mapping": "Use one 'Source: target' per line; targets are auto, low, medium, high, on, off or hide."
+    },
+    "abort": {
+      "already_configured": "This climate entity already has a proxy."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Fan mode mapping",
+        "description": "The entity reports these fan modes: {modes}. Each line maps one of them to a HomeKit name: auto, low, medium, high, on, off, or hide.",
+        "data": {
+          "fan_mapping": "Fan mode mapping (one 'Source: target' per line)",
+          "hide_hvac_modes": "HVAC modes to hide from HomeKit (heat_cool = HomeKit's Auto)",
+          "mode_switches": "Create switches for Fan only and Dry (HomeKit has no such thermostat modes)",
+          "switch_off_mode": "When a Fan only / Dry switch is turned off",
+          "create_fan": "Also create a separate fan entity (speed slider accessory in HomeKit)",
+          "fan_off_turns_off_climate": "Turning the fan entity off turns the air conditioner off"
+        }
+      }
+    },
+    "error": {
+      "invalid_mapping": "Use one 'Source: target' per line; targets are auto, low, medium, high, on, off or hide."
+    }
+  },
+  "selector": {
+    "switch_off_mode": {
+      "options": {
+        "previous": "Return to the previous heat/cool mode",
+        "off": "Turn the air conditioner off",
+        "cool": "Switch to cool"
+      }
+    },
+    "hvac_mode": {
+      "options": {
+        "heat": "Heat",
+        "cool": "Cool",
+        "heat_cool": "Heat/Cool (HomeKit Auto)",
+        "auto": "Auto",
+        "dry": "Dry",
+        "fan_only": "Fan only"
+      }
+    }
+  },
+  "entity": {
+    "fan": {
+      "fan": { "name": "Fan" }
+    },
+    "switch": {
+      "fan_only": { "name": "Fan only mode" },
+      "dry": { "name": "Dry mode" }
+    }
+  },
+  "exceptions": {
+    "unknown_fan_mode": {
+      "message": "Fan mode {mode} is not available on the source entity."
+    }
+  }
+}
