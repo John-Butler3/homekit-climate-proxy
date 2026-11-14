@@ -71,8 +71,10 @@ All settings can be changed later via **Configure** on the integration entry.
 
 - Fan speed from the Home app: open the thermostat, the fan control is in its
   detail view. Home Assistant sets the slider step to 100 / number of speeds,
-  so with Low / Mid / High the slider latches at 0 / 33 / 67 / 100 %, plus an
-  Auto toggle for Daikin's Auto fan. If your unit reports only two fan steps
+  so with Low / Mid / High the slider latches at 0 / 33 / 67 / 100 %. With the
+  default "off" fan mode, 0 % switches the unit off and picking a speed while
+  it is off switches it back on. Units with an Auto fan also get an Auto
+  toggle. If your unit reports only two fan steps
   (`fan_modes` without `Mid`), the slider has 0 / 50 / 100 %; the proxy can
   only offer speeds the Daikin integration offers. Map `Auto: hide` if you
   want no Auto fan toggle.

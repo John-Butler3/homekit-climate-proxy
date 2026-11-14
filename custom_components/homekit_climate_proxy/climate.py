@@ -209,11 +209,17 @@ class ProxyClimate(ProxyEntity, ClimateEntity):
 
     @property
     def fan_modes(self) -> list[str] | None:
-        targets = self.fan_map.targets
-        return targets or None
+        targets = list(self.fan_map.targets)
+        if not targets:
+            return None
+        if self._data.fan_off_mode and "off" not in targets:
+            targets.append("off")
+        return targets
 
     @property
     def fan_mode(self) -> str | None:
+        if self._data.fan_off_mode and self.source is not None and self.source.state == HVACMode.OFF:
+            return "off"
         return self.fan_map.to_target(self.source_fan_mode)
 
     @property
@@ -227,6 +233,10 @@ class ProxyClimate(ProxyEntity, ClimateEntity):
     # -------------------------------------------------------------- commands
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
+        if self._data.fan_off_mode and fan_mode == "off" and self.fan_map.to_source("off") is None:
+            # Fan slider at 0 % in the Home app: switch the unit off.
+            await self.async_turn_off()
+            return
         source_mode = self.fan_map.to_source(fan_mode)
         if source_mode is None:
             raise ServiceValidationError(
@@ -234,6 +244,9 @@ class ProxyClimate(ProxyEntity, ClimateEntity):
                 translation_key="unknown_fan_mode",
                 translation_placeholders={"mode": fan_mode},
             )
+        if self._data.fan_off_mode and self.source is not None and self.source.state == HVACMode.OFF:
+            # A speed chosen while the unit is off: switch it on first.
+            await self.async_turn_on()
         await self.async_call_source("set_fan_mode", fan_mode=source_mode)
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:

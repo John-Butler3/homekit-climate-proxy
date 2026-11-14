@@ -146,6 +146,23 @@ async def test_homekit_auto_is_fan_only(hass: HomeAssistant, setup_entry, servic
     assert data_of(services["set_temperature"][-1]) == {"entity_id": SOURCE, "temperature": 22, "hvac_mode": "fan_only"}
 
 
+async def test_fan_off_mode(hass: HomeAssistant, setup_entry, services) -> None:
+    await setup_entry(fan_off_mode=True)
+    state = hass.states.get(PROXY)
+    assert state.attributes["fan_modes"] == ["auto", "low", "medium", "high", "off"]
+    assert state.attributes["fan_mode"] == "medium"
+    # 0 % on the slider -> "off" -> unit off
+    await hass.services.async_call("climate", "set_fan_mode", {"entity_id": PROXY, "fan_mode": "off"}, blocking=True)
+    assert len(services["turn_off"]) == 1
+    set_source(hass, "off")
+    await hass.async_block_till_done()
+    assert hass.states.get(PROXY).attributes["fan_mode"] == "off"
+    # A speed while off switches the unit on, then sets the speed
+    await hass.services.async_call("climate", "set_fan_mode", {"entity_id": PROXY, "fan_mode": "high"}, blocking=True)
+    assert len(services["turn_on"]) == 1
+    assert data_of(services["set_fan_mode"][-1]) == {"entity_id": SOURCE, "fan_mode": "High"}
+
+
 async def test_homekit_auto_hidden(hass: HomeAssistant, setup_entry) -> None:
     await setup_entry(homekit_auto_mode="hidden")
     assert "heat_cool" not in hass.states.get(PROXY).attributes["hvac_modes"]

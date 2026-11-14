@@ -31,6 +31,7 @@ from .const import (
     CONF_MODE_SWITCHES,
     CONF_SWITCH_OFF_MODE,
     CONF_AUTO_MODE,
+    CONF_FAN_OFF_MODE,
     AUTO_FAN_ONLY,
     AUTO_MODES,
     DEFAULT_NAME,
@@ -52,6 +53,7 @@ def _options_schema(hvac_modes: list[str]) -> vol.Schema:
             vol.Optional(CONF_HIDE_HVAC_MODES, default=[]): SelectSelector(
                 SelectSelectorConfig(options=hideable, multiple=True, mode=SelectSelectorMode.LIST, translation_key="hvac_mode")
             ),
+            vol.Required(CONF_FAN_OFF_MODE, default=True): BooleanSelector(),
             vol.Required(CONF_MODE_SWITCHES, default=True): BooleanSelector(),
             vol.Required(CONF_SWITCH_OFF_MODE, default=SWITCH_OFF_PREVIOUS): SelectSelector(
                 SelectSelectorConfig(options=SWITCH_OFF_MODES, mode=SelectSelectorMode.DROPDOWN, translation_key=CONF_SWITCH_OFF_MODE)
@@ -67,6 +69,7 @@ def _collect_options(user_input: dict[str, Any]) -> dict[str, Any]:
         CONF_FAN_MAPPING: parse_mapping_text(user_input.get(CONF_FAN_MAPPING)),
         CONF_HIDE_HVAC_MODES: list(user_input.get(CONF_HIDE_HVAC_MODES) or []),
         CONF_AUTO_MODE: user_input[CONF_AUTO_MODE],
+        CONF_FAN_OFF_MODE: user_input[CONF_FAN_OFF_MODE],
         CONF_MODE_SWITCHES: user_input[CONF_MODE_SWITCHES],
         CONF_SWITCH_OFF_MODE: user_input[CONF_SWITCH_OFF_MODE],
         CONF_CREATE_FAN: user_input[CONF_CREATE_FAN],
@@ -125,6 +128,7 @@ class HomekitClimateProxyConfigFlow(ConfigFlow, domain=DOMAIN):
         suggested = {
             CONF_FAN_MAPPING: mapping_to_text(default_mapping(self._source_modes)),
             CONF_AUTO_MODE: AUTO_FAN_ONLY,
+            CONF_FAN_OFF_MODE: True,
             CONF_HIDE_HVAC_MODES: [],
         }
         return self.async_show_form(
@@ -158,6 +162,7 @@ class HomekitClimateProxyOptionsFlow(OptionsFlow):
             CONF_FAN_MAPPING: mapping_to_text(mapping),
             CONF_HIDE_HVAC_MODES: list(current.get(CONF_HIDE_HVAC_MODES) or []),
             CONF_AUTO_MODE: current.get(CONF_AUTO_MODE, AUTO_FAN_ONLY),
+            CONF_FAN_OFF_MODE: current.get(CONF_FAN_OFF_MODE, True),
             CONF_MODE_SWITCHES: current.get(CONF_MODE_SWITCHES, True),
             CONF_SWITCH_OFF_MODE: current.get(CONF_SWITCH_OFF_MODE, SWITCH_OFF_PREVIOUS),
             CONF_CREATE_FAN: current.get(CONF_CREATE_FAN, False),

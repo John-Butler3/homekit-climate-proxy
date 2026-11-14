@@ -13,6 +13,7 @@ from custom_components.homekit_climate_proxy.const import (
     CONF_MODE_SWITCHES,
     CONF_SWITCH_OFF_MODE,
     CONF_AUTO_MODE,
+    CONF_FAN_OFF_MODE,
     DOMAIN,
 )
 
@@ -25,6 +26,7 @@ FULL_INPUT = {
     CONF_SWITCH_OFF_MODE: "previous",
     CONF_HIDE_HVAC_MODES: [],
     CONF_AUTO_MODE: "fan_only",
+    CONF_FAN_OFF_MODE: True,
 }
 
 
