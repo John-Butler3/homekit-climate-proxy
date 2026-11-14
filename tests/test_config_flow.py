@@ -12,6 +12,7 @@ from custom_components.homekit_climate_proxy.const import (
     CONF_HIDE_HVAC_MODES,
     CONF_MODE_SWITCHES,
     CONF_SWITCH_OFF_MODE,
+    CONF_AUTO_MODE,
     DOMAIN,
 )
 
@@ -22,7 +23,8 @@ FULL_INPUT = {
     CONF_FAN_OFF_TURNS_OFF_CLIMATE: False,
     CONF_MODE_SWITCHES: True,
     CONF_SWITCH_OFF_MODE: "previous",
-    CONF_HIDE_HVAC_MODES: ["heat_cool"],
+    CONF_HIDE_HVAC_MODES: [],
+    CONF_AUTO_MODE: "fan_only",
 }
 
 
@@ -41,17 +43,17 @@ async def test_full_flow(hass: HomeAssistant) -> None:
     assert "Mid" in result["description_placeholders"]["modes"]
     mapping_text = _suggested(result, CONF_FAN_MAPPING)
     assert "Mid: medium" in mapping_text
-    assert _suggested(result, CONF_HIDE_HVAC_MODES) == ["heat_cool"]
+    assert _suggested(result, CONF_AUTO_MODE) == "fan_only"
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"], {CONF_FAN_MAPPING: mapping_text, **FULL_INPUT}
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["options"][CONF_FAN_MAPPING]["Mid"] == "medium"
-    assert result["options"][CONF_HIDE_HVAC_MODES] == ["heat_cool"]
+    assert result["options"][CONF_AUTO_MODE] == "fan_only"
     assert result["options"][CONF_FAN_OFF_TURNS_OFF_CLIMATE] is False
     await hass.async_block_till_done()
     assert hass.states.get("climate.living_room_ac") is not None
-    assert "heat_cool" not in hass.states.get("climate.living_room_ac").attributes["hvac_modes"]
+    assert "heat_cool" in hass.states.get("climate.living_room_ac").attributes["hvac_modes"]
 
 
 async def test_invalid_mapping(hass: HomeAssistant) -> None:

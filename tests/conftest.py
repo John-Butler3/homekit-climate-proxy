@@ -15,6 +15,7 @@ from custom_components.homekit_climate_proxy.const import (
     CONF_HIDE_HVAC_MODES,
     CONF_MODE_SWITCHES,
     CONF_SWITCH_OFF_MODE,
+    CONF_AUTO_MODE,
     DOMAIN,
 )
 
@@ -92,6 +93,7 @@ def make_entry(**options) -> MockConfigEntry:
         CONF_HIDE_HVAC_MODES: [],
         CONF_MODE_SWITCHES: True,
         CONF_SWITCH_OFF_MODE: "previous",
+        CONF_AUTO_MODE: "heat_cool",
     }
     opts.update(options)
     return MockConfigEntry(

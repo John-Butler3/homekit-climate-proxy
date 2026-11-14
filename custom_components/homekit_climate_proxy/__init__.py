@@ -22,6 +22,8 @@ from .const import (
     CONF_HIDE_HVAC_MODES,
     CONF_MODE_SWITCHES,
     CONF_SWITCH_OFF_MODE,
+    CONF_AUTO_MODE,
+    AUTO_FAN_ONLY,
     DEFAULT_NAME,
     DOMAIN,
     PLATFORMS,
@@ -47,6 +49,8 @@ class ProxyData:
     mode_switches: bool
     #: What turning such a switch off does: previous | off | cool.
     switch_off_mode: str
+    #: What HomeKit's Auto does: fan_only | dry | heat_cool | hidden.
+    auto_mode: str
     #: Last heat/cool/auto mode seen on the source (runtime, for "previous").
     last_regular_mode: str | None = None
 
@@ -74,6 +78,7 @@ def build_data(entry: ConfigEntry) -> ProxyData:
         hide_hvac_modes=set(cfg.get(CONF_HIDE_HVAC_MODES) or []),
         mode_switches=bool(cfg.get(CONF_MODE_SWITCHES, True)),
         switch_off_mode=cfg.get(CONF_SWITCH_OFF_MODE) or "previous",
+        auto_mode=cfg.get(CONF_AUTO_MODE) or AUTO_FAN_ONLY,
     )
 
 

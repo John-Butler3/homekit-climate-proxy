@@ -124,6 +124,33 @@ async def test_switch_off_mode_option(hass: HomeAssistant, setup_entry, services
     assert data_of(services["set_hvac_mode"][-1]) == {"entity_id": SOURCE, "hvac_mode": "off"}
 
 
+async def test_homekit_auto_is_fan_only(hass: HomeAssistant, setup_entry, services) -> None:
+    await setup_entry(homekit_auto_mode="fan_only")
+    state = hass.states.get(PROXY)
+    assert "heat_cool" in state.attributes["hvac_modes"]
+    # HomeKit Auto -> Daikin fan only
+    await hass.services.async_call("climate", "set_hvac_mode", {"entity_id": PROXY, "hvac_mode": "heat_cool"}, blocking=True)
+    assert data_of(services["set_hvac_mode"][-1]) == {"entity_id": SOURCE, "hvac_mode": "fan_only"}
+    # Daikin in fan only -> shown as heat_cool (Auto in the Home app)
+    set_source(hass, "fan_only")
+    await hass.async_block_till_done()
+    assert hass.states.get(PROXY).state == "heat_cool"
+    # Real heat_cool on the Daikin is not selectable anymore and shows as cool
+    set_source(hass, "heat_cool")
+    await hass.async_block_till_done()
+    assert hass.states.get(PROXY).state == "cool"
+    # set_temperature with heat_cool is translated too
+    await hass.services.async_call(
+        "climate", "set_temperature", {"entity_id": PROXY, "temperature": 22, "hvac_mode": "heat_cool"}, blocking=True
+    )
+    assert data_of(services["set_temperature"][-1]) == {"entity_id": SOURCE, "temperature": 22, "hvac_mode": "fan_only"}
+
+
+async def test_homekit_auto_hidden(hass: HomeAssistant, setup_entry) -> None:
+    await setup_entry(homekit_auto_mode="hidden")
+    assert "heat_cool" not in hass.states.get(PROXY).attributes["hvac_modes"]
+
+
 async def test_hidden_modes_and_disabled_extras(hass: HomeAssistant, setup_entry) -> None:
     await setup_entry(fan_mapping={"Mid": "hide"}, mode_switches=False, hide_hvac_modes=["heat_cool"])
     assert hass.states.get(FAN) is None

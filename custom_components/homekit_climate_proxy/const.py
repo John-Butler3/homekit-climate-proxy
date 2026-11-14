@@ -16,6 +16,14 @@ CONF_FAN_OFF_TURNS_OFF_CLIMATE: Final = "fan_off_turns_off_climate"
 CONF_HIDE_HVAC_MODES: Final = "hide_hvac_modes"
 CONF_MODE_SWITCHES: Final = "mode_switches"
 CONF_SWITCH_OFF_MODE: Final = "switch_off_mode"
+CONF_AUTO_MODE: Final = "homekit_auto_mode"
+
+# What HomeKit's "Auto" (Home Assistant heat_cool) does on the proxy.
+AUTO_HEAT_COOL: Final = "heat_cool"
+AUTO_FAN_ONLY: Final = "fan_only"
+AUTO_DRY: Final = "dry"
+AUTO_HIDDEN: Final = "hidden"
+AUTO_MODES: Final = [AUTO_FAN_ONLY, AUTO_DRY, AUTO_HEAT_COOL, AUTO_HIDDEN]
 
 SWITCH_OFF_PREVIOUS: Final = "previous"
 SWITCH_OFF_OFF: Final = "off"

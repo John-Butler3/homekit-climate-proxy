@@ -33,7 +33,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import ProxyConfigEntry, ProxyData
-from .const import DOMAIN
+from .const import AUTO_DRY, AUTO_FAN_ONLY, AUTO_HEAT_COOL, AUTO_HIDDEN, DOMAIN
 from .entity import ProxyEntity
 
 # Features the proxy can forward one-to-one.
@@ -80,15 +80,33 @@ class ProxyClimate(ProxyEntity, ClimateEntity):
         return features
 
     @property
+    def _auto_target(self) -> HVACMode | None:
+        """The source mode behind HomeKit's Auto, or None when Auto is hidden / real."""
+        if self._data.auto_mode == AUTO_FAN_ONLY:
+            return HVACMode.FAN_ONLY
+        if self._data.auto_mode == AUTO_DRY:
+            return HVACMode.DRY
+        return None
+
+    @property
     def hvac_modes(self) -> list[HVACMode]:
-        modes = []
+        source_modes: list[HVACMode] = []
         for mode in self.source_attr(ATTR_HVAC_MODES) or []:
-            if mode in self._data.hide_hvac_modes:
-                continue
             try:
-                modes.append(HVACMode(mode))
+                source_modes.append(HVACMode(mode))
             except ValueError:
                 continue
+        modes = [m for m in source_modes if m not in self._data.hide_hvac_modes]
+        auto_target = self._auto_target
+        if auto_target is not None:
+            # HomeKit's Auto stands in for fan only / dry: offer heat_cool
+            # whenever the source has that mode, even if it has no real auto.
+            if auto_target in source_modes and HVACMode.HEAT_COOL not in modes:
+                modes.append(HVACMode.HEAT_COOL)
+            if auto_target not in source_modes and HVACMode.HEAT_COOL in modes:
+                modes.remove(HVACMode.HEAT_COOL)
+        elif self._data.auto_mode == AUTO_HIDDEN and HVACMode.HEAT_COOL in modes:
+            modes.remove(HVACMode.HEAT_COOL)
         if HVACMode.OFF not in modes:
             modes.append(HVACMode.OFF)
         return modes
@@ -102,12 +120,18 @@ class ProxyClimate(ProxyEntity, ClimateEntity):
             mode = HVACMode(source.state)
         except ValueError:
             return None
-        if mode in self._data.hide_hvac_modes and mode != HVACMode.OFF:
+        auto_target = self._auto_target
+        if auto_target is not None and mode == auto_target:
+            return HVACMode.HEAT_COOL
+        visible = self.hvac_modes
+        # With Auto standing in for fan only / dry, the source's real heat_cool
+        # must not be reported as heat_cool either.
+        misleading = auto_target is not None and mode == HVACMode.HEAT_COOL
+        if mode != HVACMode.OFF and (misleading or mode in self._data.hide_hvac_modes or mode not in visible):
             # Report the closest mode HomeKit was offered, so the thermostat
             # never shows a state it cannot select.
-            visible = self.hvac_modes
             for candidate in (HVACMode.COOL, HVACMode.HEAT, HVACMode.HEAT_COOL, HVACMode.AUTO):
-                if candidate in visible:
+                if candidate in visible and not (misleading and candidate == HVACMode.HEAT_COOL):
                     return candidate
         return mode
 
@@ -213,10 +237,16 @@ class ProxyClimate(ProxyEntity, ClimateEntity):
         await self.async_call_source("set_fan_mode", fan_mode=source_mode)
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
+        auto_target = self._auto_target
+        if hvac_mode == HVACMode.HEAT_COOL and auto_target is not None:
+            hvac_mode = auto_target
         await self.async_call_source("set_hvac_mode", hvac_mode=hvac_mode)
 
     async def async_set_temperature(self, **kwargs: Any) -> None:
         data = {k: v for k, v in kwargs.items() if k in (ATTR_TEMPERATURE, ATTR_TARGET_TEMP_HIGH, ATTR_TARGET_TEMP_LOW, ATTR_HVAC_MODE)}
+        auto_target = self._auto_target
+        if data.get(ATTR_HVAC_MODE) == HVACMode.HEAT_COOL and auto_target is not None:
+            data[ATTR_HVAC_MODE] = auto_target
         await self.async_call_source("set_temperature", **data)
 
     async def async_set_humidity(self, humidity: int) -> None:

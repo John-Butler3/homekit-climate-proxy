@@ -14,7 +14,8 @@
         "description": "The entity reports these fan modes: {modes}. Each line maps one of them to a HomeKit name: auto, low, medium, high, on, off, or hide. The suggestion usually needs no change.",
         "data": {
           "fan_mapping": "Fan mode mapping (one 'Source: target' per line)",
-          "hide_hvac_modes": "HVAC modes to hide from HomeKit (heat_cool = HomeKit's Auto)",
+          "homekit_auto_mode": "What HomeKit's Auto mode does",
+          "hide_hvac_modes": "Other HVAC modes to hide from HomeKit",
           "mode_switches": "Create Fan only and Dry switches (HomeKit thermostats have no such modes; the switches are the only way to reach them from the Home app)",
           "switch_off_mode": "When a Fan only / Dry switch is turned off",
           "create_fan": "Also create a separate fan accessory (off by default; the thermostat already has the fan speed)",
@@ -37,7 +38,8 @@
         "description": "The entity reports these fan modes: {modes}. Each line maps one of them to a HomeKit name: auto, low, medium, high, on, off, or hide.",
         "data": {
           "fan_mapping": "Fan mode mapping (one 'Source: target' per line)",
-          "hide_hvac_modes": "HVAC modes to hide from HomeKit (heat_cool = HomeKit's Auto)",
+          "homekit_auto_mode": "What HomeKit's Auto mode does",
+          "hide_hvac_modes": "Other HVAC modes to hide from HomeKit",
           "mode_switches": "Create Fan only and Dry switches (HomeKit thermostats have no such modes; the switches are the only way to reach them from the Home app)",
           "switch_off_mode": "When a Fan only / Dry switch is turned off",
           "create_fan": "Also create a separate fan accessory (off by default; the thermostat already has the fan speed)",
@@ -50,6 +52,14 @@
     }
   },
   "selector": {
+    "homekit_auto_mode": {
+      "options": {
+        "fan_only": "Fan only (recommended for Daikin)",
+        "dry": "Dry",
+        "heat_cool": "Real heat/cool auto",
+        "hidden": "Hide Auto"
+      }
+    },
     "switch_off_mode": {
       "options": {
         "previous": "Return to the previous heat/cool mode",
